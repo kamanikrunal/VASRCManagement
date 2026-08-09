@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VASRC Project Directory | Kamdhenu University</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --maroon: #7B1C1C; --maroon-dark: #4A0E0E; --gold: #C8960C;
+      --gold-light: #FEF3D0; --bg: #F4F1EB; --white: #ffffff;
+      --text: #1a1a2e; --text2: #666; --border: #e2d9cc;
+      --sidebar-w: 260px; --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); display:flex; min-height:100vh; }
+
+    /* Sidebar — identical to dashboard */
+    .sidebar {
+      width:var(--sidebar-w); background:linear-gradient(180deg,var(--maroon-dark) 0%,var(--maroon) 100%);
+      display:flex; flex-direction:column; position:fixed; top:0; left:0; height:100vh; z-index:100;
+      box-shadow:4px 0 20px rgba(0,0,0,0.18);
+    }
+    .sidebar-brand { padding:22px 20px 18px; border-bottom:1px solid rgba(255,255,255,0.1); }
+    .sidebar-brand .brand-logo { display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+    .brand-icon {
+      width:42px; height:42px; border-radius:10px;
+      background:linear-gradient(135deg,var(--gold),#e6a800);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.2rem; color:var(--maroon-dark); flex-shrink:0;
+    }
+    .brand-text .brand-name { color:var(--gold); font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:700; }
+    .brand-text .brand-sub  { color:rgba(255,255,255,0.6); font-size:0.67rem; letter-spacing:0.4px; margin-top:2px; }
+    .sidebar-uni { color:rgba(255,255,255,0.45); font-size:0.68rem; margin-top:6px; }
+    .nav-section-label { color:rgba(255,255,255,0.35); font-size:0.65rem; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; padding:18px 20px 6px; }
+    .nav-item {
+      display:flex; align-items:center; gap:12px; padding:11px 20px;
+      color:rgba(255,255,255,0.75); text-decoration:none; font-size:0.87rem; font-weight:500;
+      border-left:3px solid transparent; transition:all 0.2s; cursor:pointer;
+    }
+    .nav-item:hover, .nav-item.active { background:rgba(255,255,255,0.1); color:#fff; border-left-color:var(--gold); }
+    .nav-item i { width:18px; text-align:center; font-size:0.9rem; }
+    .nav-badge { margin-left:auto; background:var(--gold); color:var(--maroon-dark); font-size:0.65rem; font-weight:700; padding:2px 7px; border-radius:10px; }
+    .sidebar-footer { margin-top:auto; padding:16px 20px; border-top:1px solid rgba(255,255,255,0.1); }
+    .user-card { display:flex; align-items:center; gap:10px; }
+    .user-avatar { width:36px; height:36px; border-radius:50%; background:var(--gold); display:flex; align-items:center; justify-content:center; font-weight:700; color:var(--maroon-dark); font-size:0.85rem; flex-shrink:0; }
+    .user-info .user-name { color:#fff; font-size:0.82rem; font-weight:600; }
+    .user-info .user-role { color:rgba(255,255,255,0.5); font-size:0.68rem; }
+    .logout-btn { margin-left:auto; background:none; border:none; color:rgba(255,255,255,0.5); cursor:pointer; font-size:1rem; padding:4px; transition:color 0.2s; }
+    .logout-btn:hover { color:#ff8080; }
+
+    /* Main layout */
+    .main { margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; }
+    .topbar {
+      height:66px; background:var(--white); border-bottom:1px solid var(--border);
+      display:flex; align-items:center; padding:0 28px; gap:16px;
+      position:sticky; top:0; z-index:50; box-shadow:var(--shadow);
+    }
+    .topbar-title { font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--maroon); font-weight:700; }
+    .topbar-sub   { font-size:0.78rem; color:var(--text2); margin-top:1px; }
+    .topbar-right { margin-left:auto; display:flex; align-items:center; gap:10px; }
+    .topbar-btn {
+      background:none; border:1.5px solid var(--border); border-radius:8px;
+      padding:7px 12px; color:var(--text2); cursor:pointer; font-size:0.84rem;
+      font-family:'Inter',sans-serif; transition:all 0.2s; display:flex; align-items:center; gap:6px;
+    }
+    .topbar-btn:hover { border-color:var(--maroon); color:var(--maroon); }
+    .topbar-btn.primary { background:var(--maroon); color:#fff; border-color:var(--maroon); }
+    .topbar-btn.primary:hover { background:var(--maroon-dark); }
+    .content { padding:28px; }
+
+    /* Search & Filters bar */
+    .filters-bar {
+      background:var(--white); border-radius:14px; padding:20px 24px;
+      box-shadow:var(--shadow); margin-bottom:22px;
+      display:flex; flex-wrap:wrap; gap:12px; align-items:center;
+    }
+    .search-wrap {
+      position:relative; flex:1; min-width:220px;
+    }
+    .search-wrap i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#aaa; }
+    .search-input {
+      width:100%; padding:10px 12px 10px 36px; border:1.5px solid var(--border);
+      border-radius:9px; font-size:0.87rem; font-family:'Inter',sans-serif;
+      outline:none; transition:border-color 0.2s; background:#fafaf8;
+    }
+    .search-input:focus { border-color:var(--maroon); background:#fff; }
+    .filter-select {
+      padding:10px 14px; border:1.5px solid var(--border); border-radius:9px;
+      font-size:0.84rem; font-family:'Inter',sans-serif; color:var(--text);
+      background:#fafaf8; outline:none; cursor:pointer; transition:border-color 0.2s; min-width:150px;
+    }
+    .filter-select:focus { border-color:var(--maroon); }
+    .view-toggle { display:flex; border:1.5px solid var(--border); border-radius:9px; overflow:hidden; }
+    .view-btn {
+      padding:8px 12px; background:none; border:none; cursor:pointer;
+      color:var(--text2); font-size:0.9rem; transition:all 0.2s;
+    }
+    .view-btn.active { background:var(--maroon); color:#fff; }
+
+    /* Results summary */
+    .results-bar {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:16px; font-size:0.83rem; color:var(--text2);
+    }
+    .results-bar strong { color:var(--text); }
+    .sort-wrap { display:flex; align-items:center; gap:8px; }
+
+    /* ── CARD GRID VIEW ── */
+    .projects-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:20px; }
+    .project-card {
+      background:var(--white); border-radius:14px; box-shadow:var(--shadow);
+      overflow:hidden; transition:transform 0.2s, box-shadow 0.2s; cursor:pointer;
+      border-top:4px solid var(--border);
+    }
+    .project-card:hover { transform:translateY(-3px); box-shadow:0 8px 28px rgba(0,0,0,0.12); }
+    .project-card.status-ongoing   { border-top-color:#27ae60; }
+    .project-card.status-review    { border-top-color:#e65100; }
+    .project-card.status-completed { border-top-color:#1565c0; }
+    .project-card.status-pending   { border-top-color:#880e4f; }
+
+    .card-body { padding:20px 22px 16px; }
+    .card-top { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:10px; }
+    .project-code { font-size:0.7rem; font-weight:700; color:var(--gold); letter-spacing:0.5px; background:var(--gold-light); padding:3px 9px; border-radius:20px; white-space:nowrap; }
+    .card-title { font-size:0.95rem; font-weight:700; color:var(--text); line-height:1.4; margin-bottom:8px; }
+    .card-abstract { font-size:0.79rem; color:var(--text2); line-height:1.55; margin-bottom:14px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+
+    .card-meta { display:flex; flex-direction:column; gap:5px; margin-bottom:14px; }
+    .meta-item { display:flex; align-items:center; gap:8px; font-size:0.78rem; color:var(--text2); }
+    .meta-item i { color:var(--maroon); width:14px; text-align:center; font-size:0.8rem; }
+    .meta-item strong { color:var(--text); font-weight:500; }
+
+    .card-progress { margin-bottom:14px; }
+    .progress-label { display:flex; justify-content:space-between; font-size:0.73rem; color:var(--text2); margin-bottom:5px; }
+    .progress-track { background:#f0ece4; border-radius:20px; height:7px; }
+    .progress-fill  { height:7px; border-radius:20px; background:linear-gradient(90deg,var(--maroon),var(--gold)); transition:width 0.6s; }
+
+    .card-footer-bar {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 22px; border-top:1px solid #f0ece4; background:#fafaf7;
+    }
+    .status-pill {
+      display:inline-flex; align-items:center; gap:5px; padding:3px 10px;
+      border-radius:20px; font-size:0.71rem; font-weight:600;
+    }
+    .status-pill::before { content:''; width:6px; height:6px; border-radius:50%; }
+    .s-ongoing   { background:#e8f5e9; color:#1e7e34; } .s-ongoing::before   { background:#1e7e34; }
+    .s-review    { background:#fff3e0; color:#e65100; } .s-review::before    { background:#e65100; }
+    .s-completed { background:#e3f2fd; color:#1565c0; } .s-completed::before { background:#1565c0; }
+    .s-pending   { background:#fce4ec; color:#880e4f; } .s-pending::before   { background:#880e4f; }
+
+    .card-actions { display:flex; gap:6px; }
+    .icon-btn {
+      width:30px; height:30px; border-radius:7px; border:1.5px solid var(--border);
+      background:none; cursor:pointer; font-size:0.8rem; color:var(--text2);
+      display:flex; align-items:center; justify-content:center; transition:all 0.2s;
+    }
+    .icon-btn:hover { background:var(--maroon); color:#fff; border-color:var(--maroon); }
+
+    /* ── LIST VIEW ── */
+    .projects-list { display:flex; flex-direction:column; gap:12px; }
+    .list-row {
+      background:var(--white); border-radius:12px; box-shadow:var(--shadow);
+      padding:16px 22px; display:flex; align-items:center; gap:16px;
+      border-left:4px solid var(--border); cursor:pointer; transition:all 0.2s;
+    }
+    .list-row:hover { box-shadow:0 4px 20px rgba(0,0,0,0.1); transform:translateX(2px); }
+    .list-row.status-ongoing   { border-left-color:#27ae60; }
+    .list-row.status-review    { border-left-color:#e65100; }
+    .list-row.status-completed { border-left-color:#1565c0; }
+    .list-row.status-pending   { border-left-color:#880e4f; }
+    .list-code { font-size:0.7rem; font-weight:700; color:var(--gold); background:var(--gold-light); padding:3px 9px; border-radius:20px; white-space:nowrap; min-width:110px; text-align:center; }
+    .list-info { flex:1; min-width:0; }
+    .list-title { font-weight:600; font-size:0.9rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .list-pi    { font-size:0.76rem; color:var(--text2); margin-top:2px; }
+    .list-dept  { font-size:0.78rem; color:var(--text2); min-width:160px; }
+    .list-prog  { min-width:90px; }
+    .list-prog .progress-track { background:#f0ece4; border-radius:20px; height:6px; }
+    .list-prog .progress-fill  { height:6px; border-radius:20px; background:linear-gradient(90deg,var(--maroon),var(--gold)); }
+    .list-prog .prog-pct { font-size:0.7rem; color:var(--text2); text-align:right; margin-bottom:3px; }
+    .list-fund  { font-size:0.82rem; font-weight:600; color:var(--text); min-width:70px; text-align:right; }
+    .list-actions { display:flex; gap:6px; }
+    .hidden { display:none !important; }
+
+    /* ── Detail Modal ── */
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:200; display:none; align-items:center; justify-content:center; padding:24px; }
+    .modal-overlay.open { display:flex; }
+    .modal-box {
+      background:var(--white); border-radius:18px; max-width:720px; width:100%;
+      max-height:90vh; overflow-y:auto; box-shadow:0 24px 80px rgba(0,0,0,0.22);
+    }
+    .modal-header {
+      padding:24px 28px 20px; border-bottom:1px solid var(--border);
+      display:flex; align-items:flex-start; gap:16px; position:sticky; top:0;
+      background:var(--white); border-radius:18px 18px 0 0; z-index:1;
+    }
+    .modal-header-icon {
+      width:52px; height:52px; border-radius:12px; background:linear-gradient(135deg,var(--maroon),var(--maroon-dark));
+      display:flex; align-items:center; justify-content:center; font-size:1.4rem; color:var(--gold); flex-shrink:0;
+    }
+    .modal-header-text .modal-title { font-family:'Playfair Display',serif; font-size:1.15rem; color:var(--maroon); line-height:1.3; }
+    .modal-header-text .modal-code  { font-size:0.75rem; color:var(--gold); font-weight:600; margin-top:4px; }
+    .modal-close { margin-left:auto; background:none; border:none; font-size:1.2rem; color:var(--text2); cursor:pointer; padding:4px; transition:color 0.2s; }
+    .modal-close:hover { color:var(--maroon); }
+    .modal-body { padding:24px 28px; }
+    .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; }
+    .detail-item label { font-size:0.72rem; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px; }
+    .detail-item span  { font-size:0.88rem; font-weight:500; color:var(--text); }
+    .section-divider { font-size:0.78rem; font-weight:700; color:var(--maroon); text-transform:uppercase; letter-spacing:0.8px; margin:18px 0 10px; padding-bottom:6px; border-bottom:2px solid var(--gold-light); }
+    .abstract-text { font-size:0.85rem; color:var(--text2); line-height:1.7; }
+    .team-chips { display:flex; flex-wrap:wrap; gap:8px; }
+    .team-chip {
+      display:flex; align-items:center; gap:7px; padding:6px 12px;
+      background:#faf8f4; border:1px solid var(--border); border-radius:20px; font-size:0.8rem;
+    }
+    .chip-avatar { width:24px; height:24px; border-radius:50%; background:var(--maroon); color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.6rem; font-weight:700; }
+    .chip-name { font-weight:500; color:var(--text); }
+    .chip-role { color:var(--text2); font-size:0.72rem; }
+    .milestone-list { list-style:none; }
+    .milestone-item { display:flex; align-items:center; gap:12px; padding:9px 0; border-bottom:1px solid #f0ece4; font-size:0.83rem; }
+    .milestone-item:last-child { border-bottom:none; }
+    .ms-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .ms-done { background:#27ae60; } .ms-active { background:var(--gold); } .ms-future { background:#ccc; }
+    .ms-label { flex:1; color:var(--text); }
+    .ms-date  { color:var(--text2); font-size:0.75rem; }
+    .modal-footer { padding:16px 28px 24px; display:flex; gap:10px; justify-content:flex-end; border-top:1px solid var(--border); }
+    .btn { padding:9px 20px; border-radius:8px; font-size:0.85rem; font-weight:600; cursor:pointer; border:none; font-family:'Inter',sans-serif; transition:all 0.2s; display:flex; align-items:center; gap:6px; }
+    .btn-primary { background:var(--maroon); color:#fff; }
+    .btn-primary:hover { background:var(--maroon-dark); }
+    .btn-outline { background:none; border:1.5px solid var(--border); color:var(--text2); }
+    .btn-outline:hover { border-color:var(--maroon); color:var(--maroon); }
+    .no-results { text-align:center; padding:60px 20px; color:var(--text2); }
+    .no-results i { font-size:3rem; color:#ddd; margin-bottom:16px; display:block; }
+    .no-results h3 { font-size:1rem; color:var(--text); margin-bottom:8px; }
+
+    @media(max-width:900px) { .detail-grid { grid-template-columns:1fr; } }
+    @media(max-width:700px) { .sidebar { transform:translateX(-100%); } .main { margin-left:0; } }
+  </style>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo">
+      <div class="brand-icon"><i class="fas fa-microscope"></i></div>
+      <div class="brand-text">
+        <div class="brand-name">VASRC</div>
+        <div class="brand-sub">Project Management</div>
+      </div>
+    </div>
+    <div class="sidebar-uni">Kamdhenu University, Gujarat</div>
+  </div>
+  <div class="nav-section-label">Main Menu</div>
+  <a class="nav-item" href="admin_dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a>
+  <a class="nav-item active" href="project_directory.html"><i class="fas fa-folder-open"></i> Projects <span class="nav-badge">24</span></a>
+  <a class="nav-item" href="#" onclick="event.preventDefault();openAddModal()"><i class="fas fa-plus-circle"></i> Add Project</a>
+  <a class="nav-item" href="#" onclick="event.preventDefault();showToast('Researchers module coming soon','info')"><i class="fas fa-users"></i> Researchers</a>
+  <a class="nav-item" href="#" onclick="event.preventDefault();exportProjects()"><i class="fas fa-file-alt"></i> Reports</a>
+  <div class="nav-section-label">Administration</div>
+  <a class="nav-item" href="#" onclick="event.preventDefault();showToast('Funding & Budget module coming soon','info')"><i class="fas fa-rupee-sign"></i> Funding &amp; Budget</a>
+  <a class="nav-item" href="#" onclick="event.preventDefault();showToast('Milestones module coming soon','info')"><i class="fas fa-calendar-check"></i> Milestones</a>
+  <a class="nav-item" href="#" onclick="event.preventDefault();showToast('5 new notifications','info')"><i class="fas fa-bell"></i> Notifications <span class="nav-badge">5</span></a>
+  <a class="nav-item" href="#" onclick="event.preventDefault();showToast('Settings module coming soon','info')"><i class="fas fa-cog"></i> Settings</a>
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="user-avatar" id="sidebarAvatar">AD</div>
+      <div class="user-info">
+        <div class="user-name"  id="sidebarName">Administrator</div>
+        <div class="user-role" id="sidebarRole">Admin</div>
+      </div>
+      <button class="logout-btn" onclick="logout()" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+    </div>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+  <header class="topbar">
+    <div>
+      <div class="topbar-title">Project Directory</div>
+      <div class="topbar-sub">All VASRC Research Projects — Kamdhenu University</div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" onclick="openAddModal()"><i class="fas fa-plus"></i> Add Project</button>
+      <button class="topbar-btn" onclick="exportProjects()"><i class="fas fa-download"></i> Export</button>
+      <button class="topbar-btn primary" onclick="window.location.href='admin_dashboard.html'">
+        <i class="fas fa-th-large"></i> Dashboard
+      </button>
+    </div>
+  </header>
+
+  <div class="content">
+    <!-- Filters Bar -->
+    <div class="filters-bar">
+      <div class="search-wrap">
+        <i class="fas fa-search"></i>
+        <input class="search-input" type="text" id="searchInput" placeholder="Search by title, PI name, department, keyword…" oninput="applyFilters()"/>
+      </div>
+      <select class="filter-select" id="filterStatus" onchange="applyFilters()">
+        <option value="">All Statuses</option>
+        <option value="Ongoing">Ongoing</option>
+        <option value="Under Review">Under Review</option>
+        <option value="Completed">Completed</option>
+        <option value="Pending Approval">Pending Approval</option>
+      </select>
+      <select class="filter-select" id="filterDept" onchange="applyFilters()">
+        <option value="">All Departments</option>
+        <option>Animal Pathology</option>
+        <option>Veterinary Microbiology</option>
+        <option>Animal Nutrition</option>
+        <option>Parasitology</option>
+        <option>Veterinary Surgery</option>
+        <option>Animal Genetics</option>
+        <option>Livestock Production</option>
+      </select>
+      <select class="filter-select" id="filterYear" onchange="applyFilters()">
+        <option value="">All Years</option>
+        <option>2025</option><option>2024</option><option>2023</option><option>2022</option><option>2021</option>
+      </select>
+      <div class="view-toggle">
+        <button class="view-btn active" id="gridBtn" onclick="setView('grid')" title="Grid View"><i class="fas fa-th-large"></i></button>
+        <button class="view-btn" id="listBtn" onclick="setView('list')" title="List View"><i class="fas fa-list"></i></button>
+      </div>
+    </div>
+
+    <!-- Results summary -->
+    <div class="results-bar">
+      <div><strong id="resultsCount">24</strong> projects found</div>
+      <div class="sort-wrap">
+        Sort by:
+        <select class="filter-select" id="sortBy" onchange="applyFilters()" style="min-width:120px; padding:6px 10px;">
+          <option value="title">Title A–Z</option>
+          <option value="year-desc">Newest First</option>
+          <option value="year-asc">Oldest First</option>
+          <option value="progress">Progress</option>
+          <option value="funding">Funding</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Grid View -->
+    <div class="projects-grid" id="gridView"></div>
+    <!-- List View -->
+    <div class="projects-list hidden" id="listView"></div>
+    <!-- No results -->
+    <div class="no-results hidden" id="noResults">
+      <i class="fas fa-search"></i>
+      <h3>No projects found</h3>
+      <p>Try adjusting your search or filters.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-header">
+      <div class="modal-header-icon"><i class="fas fa-microscope"></i></div>
+      <div class="modal-header-text">
+        <div class="modal-title" id="mTitle">Project Title</div>
+        <div class="modal-code"  id="mCode">VASRC/2025/001</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-grid">
+        <div class="detail-item"><label>Principal Investigator</label><span id="mPI">—</span></div>
+        <div class="detail-item"><label>Co-Investigator</label><span id="mCoPI">—</span></div>
+        <div class="detail-item"><label>Department</label><span id="mDept">—</span></div>
+        <div class="detail-item"><label>Status</label><span id="mStatus">—</span></div>
+        <div class="detail-item"><label>Start Date</label><span id="mStart">—</span></div>
+        <div class="detail-item"><label>End Date</label><span id="mEnd">—</span></div>
+        <div class="detail-item"><label>Funding</label><span id="mFund">—</span></div>
+        <div class="detail-item"><label>Funding Agency</label><span id="mAgency">—</span></div>
+        <div class="detail-item"><label>Progress</label><span id="mProgress">—</span></div>
+        <div class="detail-item"><label>Keywords</label><span id="mKeywords">—</span></div>
+      </div>
+
+      <div class="section-divider">Project Abstract</div>
+      <p class="abstract-text" id="mAbstract">—</p>
+
+      <div class="section-divider">Research Team</div>
+      <div class="team-chips" id="mTeam"></div>
+
+      <div class="section-divider">Key Milestones</div>
+      <ul class="milestone-list" id="mMilestones"></ul>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()"><i class="fas fa-times"></i> Close</button>
+      <button class="btn btn-primary" id="modalEditBtn" onclick="openEditFromDetail()"><i class="fas fa-edit"></i> Edit Project</button>
+      <button class="btn btn-primary" style="background:#1565c0;" id="modalDownloadBtn" onclick="downloadReportFromDetail()"><i class="fas fa-file-download"></i> Download Report</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── Data ───────────────────────────────────────────────────────────────────
+const projects = [
+  {
+    id:1, code:'VASRC/2022/001', title:'Molecular Characterization of Bovine Mastitis Pathogens and Identification of Novel Biomarkers',
+    pi:'Dr. Ravi Sharma', copi:'Dr. Priya Verma', dept:'Animal Pathology',
+    status:'Ongoing', start:'Jan 2022', end:'Dec 2025', progress:72,
+    fund:'₹18.5 Lakhs', agency:'ICAR', year:2022,
+    abstract:'This study aims to characterize bacterial and mycotic pathogens causing bovine mastitis using advanced molecular techniques including 16S rRNA sequencing and MALDI-TOF. Novel diagnostic biomarkers are being identified to enable early-stage detection and targeted therapy.',
+    keywords:'Bovine Mastitis, MALDI-TOF, Biomarkers, 16S rRNA',
+    team:[{name:'Dr. Ravi Sharma',role:'PI'},{name:'Dr. Priya Verma',role:'Co-PI'},{name:'Mr. Amit Yadav',role:'Research Scholar'},{name:'Ms. Hetal Shah',role:'JRF'}],
+    milestones:[
+      {label:'Literature Review & Protocol Approval',date:'Jun 2022',done:true},
+      {label:'Sample Collection (n=300)',date:'Dec 2022',done:true},
+      {label:'Molecular Characterization',date:'Jun 2023',done:true},
+      {label:'Biomarker Identification & Validation',date:'Jun 2024',done:true},
+      {label:'Clinical Trial & Data Analysis',date:'Jun 2025',done:false,active:true},
+      {label:'Final Report & Publication',date:'Dec 2025',done:false}
+    ]
+  },
+  {
+    id:2, code:'VASRC/2023/002', title:'Evaluation of FMD Vaccine Efficacy Against Emerging Serotypes in Gujarat Livestock',
+    pi:'Dr. Meena Patel', copi:'Dr. Kamlesh Desai', dept:'Veterinary Microbiology',
+    status:'Under Review', start:'Mar 2023', end:'Feb 2026', progress:45,
+    fund:'₹32.0 Lakhs', agency:'GSSCST', year:2023,
+    abstract:'Foot-and-mouth disease remains a major constraint on livestock productivity in India. This project evaluates the protective efficacy of bivalent FMD vaccines against circulating O and A serotypes in Gujarat, employing ELISA-based antibody titration and virus neutralisation tests.',
+    keywords:'FMD, Vaccine Efficacy, Serotype, ELISA, Livestock Gujarat',
+    team:[{name:'Dr. Meena Patel',role:'PI'},{name:'Dr. Kamlesh Desai',role:'Co-PI'},{name:'Dr. Sneha Rao',role:'Consultant'},{name:'Mr. Vivek Trivedi',role:'SRF'}],
+    milestones:[
+      {label:'Serum Sample Collection',date:'Jun 2023',done:true},
+      {label:'ELISA Standardization',date:'Dec 2023',done:true},
+      {label:'Vaccine Trial (Field)',date:'Jun 2024',done:false,active:true},
+      {label:'Efficacy Analysis',date:'Dec 2024',done:false},
+      {label:'Report Submission',date:'Feb 2026',done:false}
+    ]
+  },
+  {
+    id:3, code:'VASRC/2023/003', title:'Optimizing Poultry Nutrition for Enhanced Meat Quality and Reduced Antibiotic Use in Broiler Farms',
+    pi:'Dr. Suresh Nair', copi:'Dr. Rekha Iyer', dept:'Animal Nutrition',
+    status:'Ongoing', start:'Jul 2023', end:'Jun 2026', progress:60,
+    fund:'₹14.2 Lakhs', agency:'DBT', year:2023,
+    abstract:'The project investigates the use of phytogenic feed additives and precision nutrition strategies as alternatives to prophylactic antibiotics in broiler production. Growth performance, carcass quality metrics, and gut microbiome profiling are being assessed at commercial farms across North Gujarat.',
+    keywords:'Poultry, Phytogenics, Broiler Nutrition, Antibiotic Resistance, Gut Microbiome',
+    team:[{name:'Dr. Suresh Nair',role:'PI'},{name:'Dr. Rekha Iyer',role:'Co-PI'},{name:'Ms. Poonam Solanki',role:'Research Scholar'}],
+    milestones:[
+      {label:'Baseline Nutritional Assessment',date:'Sep 2023',done:true},
+      {label:'Feed Formulation Trials',date:'Mar 2024',done:true},
+      {label:'Microbiome Profiling',date:'Sep 2024',done:false,active:true},
+      {label:'Farm-level Validation',date:'Mar 2026',done:false},
+      {label:'Policy Brief & Publication',date:'Jun 2026',done:false}
+    ]
+  },
+  {
+    id:4, code:'VASRC/2021/004', title:'Biomechanical Analysis and Diagnostic Imaging in Equine Lameness: A Multi-Centre Study',
+    pi:'Dr. Anjali Singh', copi:'Dr. Rohit Mehta', dept:'Veterinary Surgery',
+    status:'Completed', start:'Jan 2021', end:'Dec 2024', progress:100,
+    fund:'₹22.8 Lakhs', agency:'ICAR', year:2021,
+    abstract:'A comprehensive multi-centre study evaluating kinetic and kinematic gait analysis, digital radiography, and ultrasonography for the diagnosis of equine lameness across three Kamdhenu University affiliated equine centres. A standardised scoring protocol was developed and validated.',
+    keywords:'Equine Lameness, Gait Analysis, Radiography, Diagnostic Protocol',
+    team:[{name:'Dr. Anjali Singh',role:'PI'},{name:'Dr. Rohit Mehta',role:'Co-PI'},{name:'Dr. Pradeep Kulkarni',role:'Consultant'},{name:'Ms. Bhavna Joshi',role:'SRF'}],
+    milestones:[
+      {label:'Protocol Development',date:'Mar 2021',done:true},
+      {label:'Multi-centre Enrolment',date:'Sep 2021',done:true},
+      {label:'Data Collection Phase I',date:'Mar 2022',done:true},
+      {label:'Data Collection Phase II',date:'Mar 2023',done:true},
+      {label:'Statistical Analysis',date:'Sep 2023',done:true},
+      {label:'Final Report & Publication',date:'Dec 2024',done:true}
+    ]
+  },
+  {
+    id:5, code:'VASRC/2025/005', title:'Prevalence and Molecular Epidemiology of Tick-borne Diseases in Cattle of Saurashtra Region',
+    pi:'Dr. Hemant Joshi', copi:'—', dept:'Parasitology',
+    status:'Pending Approval', start:'Apr 2025', end:'Mar 2028', progress:10,
+    fund:'₹9.6 Lakhs', agency:'GSSCST', year:2025,
+    abstract:'This proposal seeks to determine the prevalence and molecular epidemiology of tick-borne haemoparasitic diseases (Theileriosis, Babesiosis, Anaplasmosis) in cattle of Saurashtra region using PCR-based diagnostics and phylogenetic analysis of isolated strains.',
+    keywords:'Tick-borne, Theileria, Babesia, Saurashtra, PCR Epidemiology',
+    team:[{name:'Dr. Hemant Joshi',role:'PI'},{name:'Ms. Nidhi Raval',role:'JRF Candidate'}],
+    milestones:[
+      {label:'Proposal Submission',date:'Jan 2025',done:true},
+      {label:'VASRC Committee Review',date:'Apr 2025',done:false,active:true},
+      {label:'Project Sanction',date:'Jun 2025',done:false},
+      {label:'Field Survey',date:'Dec 2025',done:false},
+      {label:'Molecular Analysis',date:'Dec 2027',done:false},
+      {label:'Final Report',date:'Mar 2028',done:false}
+    ]
+  },
+  {
+    id:6, code:'VASRC/2022/006', title:'Genetic Diversity and Conservation of Indigenous Cattle Breeds Using SNP Array Analysis',
+    pi:'Dr. Lalita Parmar', copi:'Dr. Jigar Bhatt', dept:'Animal Genetics',
+    status:'Ongoing', start:'Jun 2022', end:'May 2025', progress:85,
+    fund:'₹27.4 Lakhs', agency:'DST', year:2022,
+    abstract:'The project characterizes the genetic diversity, population structure, and selection signatures in four indigenous cattle breeds of Gujarat (Gir, Kankrej, Dangi, Amritmahal) using 50K SNP Beadchip. The findings will inform conservation breeding strategies under the National Gokul Mission.',
+    keywords:'Cattle Genetics, SNP Array, Gir, Kankrej, Conservation Genomics',
+    team:[{name:'Dr. Lalita Parmar',role:'PI'},{name:'Dr. Jigar Bhatt',role:'Co-PI'},{name:'Mr. Parth Dave',role:'SRF'},{name:'Ms. Ruchi Mistry',role:'JRF'}],
+    milestones:[
+      {label:'Blood Sample Collection',date:'Sep 2022',done:true},
+      {label:'DNA Extraction & QC',date:'Dec 2022',done:true},
+      {label:'SNP Genotyping',date:'Jun 2023',done:true},
+      {label:'Population Structure Analysis',date:'Dec 2023',done:true},
+      {label:'Manuscript Preparation',date:'Mar 2025',done:false,active:true},
+      {label:'Final Submission',date:'May 2025',done:false}
+    ]
+  },
+  {
+    id:7, code:'VASRC/2024/007', title:'Antimicrobial Resistance Profiling of Zoonotic Pathogens from Food Animals in Peri-urban Areas',
+    pi:'Dr. Vimal Thakkar', copi:'Dr. Nisha Patel', dept:'Veterinary Microbiology',
+    status:'Ongoing', start:'Jan 2024', end:'Dec 2026', progress:35,
+    fund:'₹19.0 Lakhs', agency:'ICMR', year:2024,
+    abstract:'This one-health study profiles antimicrobial resistance (AMR) patterns of Salmonella, Campylobacter, and E. coli isolated from food animals (poultry, pigs, goats) in peri-urban Gujarat. WGS-based characterization of resistance genes and mobile genetic elements is being carried out.',
+    keywords:'AMR, Zoonoses, Salmonella, One Health, WGS, Food Safety',
+    team:[{name:'Dr. Vimal Thakkar',role:'PI'},{name:'Dr. Nisha Patel',role:'Co-PI'},{name:'Mr. Kiran Solanki',role:'SRF'}],
+    milestones:[
+      {label:'Ethics Approval',date:'Feb 2024',done:true},
+      {label:'Sample Collection',date:'Aug 2024',done:true},
+      {label:'Isolation & Phenotypic AMR',date:'Feb 2025',done:false,active:true},
+      {label:'WGS Analysis',date:'Aug 2025',done:false},
+      {label:'Publication & Policy Brief',date:'Dec 2026',done:false}
+    ]
+  },
+  {
+    id:8, code:'VASRC/2021/008', title:'Development of Probiotic-based Feed Supplement for Improvement of Milk Yield in Crossbred Cows',
+    pi:'Dr. Archana Bhatt', copi:'Dr. Kishor Prajapati', dept:'Animal Nutrition',
+    status:'Completed', start:'Jul 2021', end:'Jun 2024', progress:100,
+    fund:'₹11.5 Lakhs', agency:'ICAR', year:2021,
+    abstract:'A multi-strain probiotic consortium was developed and evaluated for its ability to enhance rumen fermentation efficiency, milk yield, and composition in Holstein-Friesian × Kankrej crossbred cows. The study demonstrated a 12% increase in 305-day milk yield with the probiotic supplement.',
+    keywords:'Probiotics, Rumen, Milk Yield, Crossbred Cows, Feed Supplement',
+    team:[{name:'Dr. Archana Bhatt',role:'PI'},{name:'Dr. Kishor Prajapati',role:'Co-PI'},{name:'Ms. Disha Shah',role:'SRF'}],
+    milestones:[
+      {label:'Probiotic Screening',date:'Dec 2021',done:true},
+      {label:'In-vitro Trials',date:'Jun 2022',done:true},
+      {label:'In-vivo Animal Trial',date:'Jun 2023',done:true},
+      {label:'Data Analysis',date:'Dec 2023',done:true},
+      {label:'Final Report & Patent Filing',date:'Jun 2024',done:true}
+    ]
+  }
+];
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+const statusClass = s => ({'Ongoing':'s-ongoing','Under Review':'s-review','Completed':'s-completed','Pending Approval':'s-pending'}[s]||'s-pending');
+const cardClass   = s => ({'Ongoing':'status-ongoing','Under Review':'status-review','Completed':'status-completed','Pending Approval':'status-pending'}[s]||'');
+
+let currentView = 'grid';
+
+function setView(v) {
+  currentView = v;
+  document.getElementById('gridBtn').classList.toggle('active', v==='grid');
+  document.getElementById('listBtn').classList.toggle('active', v==='list');
+  applyFilters();
+}
+
+function applyFilters() {
+  const q    = document.getElementById('searchInput').value.toLowerCase();
+  const st   = document.getElementById('filterStatus').value;
+  const dept = document.getElementById('filterDept').value;
+  const yr   = document.getElementById('filterYear').value;
+  const sort = document.getElementById('sortBy').value;
+
+  let filtered = projects.filter(p => {
+    const matchQ    = !q    || [p.title,p.pi,p.dept,p.keywords,p.code].join(' ').toLowerCase().includes(q);
+    const matchSt   = !st   || p.status === st;
+    const matchDept = !dept || p.dept   === dept;
+    const matchYr   = !yr   || String(p.year) === yr;
+    return matchQ && matchSt && matchDept && matchYr;
+  });
+
+  // Sort
+  filtered.sort((a,b) => {
+    if (sort==='year-desc') return b.year - a.year;
+    if (sort==='year-asc')  return a.year - b.year;
+    if (sort==='progress')  return b.progress - a.progress;
+    if (sort==='funding')   return parseFloat(b.fund.replace(/[^\d.]/g,'')) - parseFloat(a.fund.replace(/[^\d.]/g,''));
+    return a.title.localeCompare(b.title);
+  });
+
+  document.getElementById('resultsCount').textContent = filtered.length;
+  const gridEl = document.getElementById('gridView');
+  const listEl = document.getElementById('listView');
+  const noRes  = document.getElementById('noResults');
+
+  gridEl.classList.add('hidden'); listEl.classList.add('hidden'); noRes.classList.add('hidden');
+
+  if (!filtered.length) { noRes.classList.remove('hidden'); return; }
+
+  if (currentView === 'grid') {
+    gridEl.classList.remove('hidden');
+    gridEl.innerHTML = filtered.map(p => `
+      <div class="project-card ${cardClass(p.status)}" onclick="openModal(${p.id})">
+        <div class="card-body">
+          <div class="card-top">
+            <div class="project-code">${p.code}</div>
+            <span class="status-pill ${statusClass(p.status)}">${p.status}</span>
+          </div>
+          <div class="card-title">${p.title}</div>
+          <p class="card-abstract">${p.abstract}</p>
+          <div class="card-meta">
+            <div class="meta-item"><i class="fas fa-user-tie"></i><strong>PI:</strong> ${p.pi}</div>
+            <div class="meta-item"><i class="fas fa-building"></i><strong>Dept:</strong> ${p.dept}</div>
+            <div class="meta-item"><i class="fas fa-calendar-alt"></i><strong>Period:</strong> ${p.start} – ${p.end}</div>
+            <div class="meta-item"><i class="fas fa-rupee-sign"></i><strong>Funding:</strong> ${p.fund} (${p.agency})</div>
+          </div>
+          <div class="card-progress">
+            <div class="progress-label"><span>Progress</span><span>${p.progress}%</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width:${p.progress}%"></div></div>
+          </div>
+        </div>
+        <div class="card-footer-bar">
+          <span class="status-pill ${statusClass(p.status)}">${p.status}</span>
+          <div class="card-actions">
+            <button class="icon-btn" title="View Details"    onclick="event.stopPropagation();openModal(${p.id})"><i class="fas fa-eye"></i></button>
+            <button class="icon-btn" title="Edit Project"    onclick="event.stopPropagation();openEditModal(${p.id})"><i class="fas fa-edit"></i></button>
+            <button class="icon-btn" title="Download Report" onclick="event.stopPropagation();downloadReport(${p.id})"><i class="fas fa-download"></i></button>
+          </div>
+        </div>
+      </div>`).join('');
+  } else {
+    listEl.classList.remove('hidden');
+    listEl.innerHTML = filtered.map(p => `
+      <div class="list-row ${cardClass(p.status)}" onclick="openModal(${p.id})">
+        <div class="list-code">${p.code}</div>
+        <div class="list-info">
+          <div class="list-title">${p.title}</div>
+          <div class="list-pi"><i class="fas fa-user-tie" style="margin-right:4px;color:var(--maroon)"></i>${p.pi}</div>
+        </div>
+        <div class="list-dept"><i class="fas fa-building" style="margin-right:5px;color:#aaa"></i>${p.dept}</div>
+        <div class="list-prog">
+          <div class="prog-pct">${p.progress}%</div>
+          <div class="progress-track"><div class="progress-fill" style="width:${p.progress}%"></div></div>
+        </div>
+        <div><span class="status-pill ${statusClass(p.status)}">${p.status}</span></div>
+        <div class="list-fund">${p.fund}</div>
+        <div class="list-actions">
+          <button class="icon-btn" title="View" onclick="event.stopPropagation();openModal(${p.id})"><i class="fas fa-eye"></i></button>
+          <button class="icon-btn" title="Edit"   onclick="event.stopPropagation();openEditModal(${p.id})"><i class="fas fa-edit"></i></button>
+          <button class="icon-btn" title="Report" onclick="event.stopPropagation();downloadReport(${p.id})"><i class="fas fa-download"></i></button>
+        </div>
+      </div>`).join('');
+  }
+}
+
+// ─── Modal ───────────────────────────────────────────────────────────────────
+let currentProjectId = null;
+
+function openModal(id) {
+  currentProjectId = id;
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('mTitle').textContent    = p.title;
+  document.getElementById('mCode').textContent     = p.code;
+  document.getElementById('mPI').textContent       = p.pi;
+  document.getElementById('mCoPI').textContent     = p.copi;
+  document.getElementById('mDept').textContent     = p.dept;
+  document.getElementById('mStatus').innerHTML     = `<span class="status-pill ${statusClass(p.status)}">${p.status}</span>`;
+  document.getElementById('mStart').textContent    = p.start;
+  document.getElementById('mEnd').textContent      = p.end;
+  document.getElementById('mFund').textContent     = p.fund;
+  document.getElementById('mAgency').textContent   = p.agency;
+  document.getElementById('mProgress').textContent = p.progress + '%';
+  document.getElementById('mKeywords').textContent = p.keywords;
+  document.getElementById('mAbstract').textContent = p.abstract;
+  document.getElementById('mTeam').innerHTML = p.team.map(m =>
+    `<div class="team-chip"><div class="chip-avatar">${m.name.split(' ').map(w=>w[0]).join('').slice(0,2)}</div><div><div class="chip-name">${m.name}</div><div class="chip-role">${m.role}</div></div></div>`
+  ).join('');
+  document.getElementById('mMilestones').innerHTML = p.milestones.map(m =>
+    `<li class="milestone-item"><div class="ms-dot ${m.done?'ms-done':m.active?'ms-active':'ms-future'}"></div><span class="ms-label">${m.label}</span><span class="ms-date">${m.date}</span></li>`
+  ).join('');
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+function closeModalOutside(e) { if (e.target===document.getElementById('modalOverlay')) closeModal(); }
+
+function openEditFromDetail()       { if (currentProjectId) { closeModal(); setTimeout(()=>openEditModal(currentProjectId),150); } }
+function downloadReportFromDetail() { if (currentProjectId) downloadReport(currentProjectId); }
+
+// ─── Edit Modal ───────────────────────────────────────────────────────────────
+function openEditModal(id) {
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('editModalTitle').textContent = 'Edit: ' + p.title.substring(0,50) + '…';
+  document.getElementById('editTitle').value  = p.title;
+  document.getElementById('editPI').value     = p.pi;
+  document.getElementById('editCoPI').value   = p.copi === '—' ? '' : p.copi;
+  document.getElementById('editDept').value   = p.dept;
+  document.getElementById('editStatus').value = p.status;
+  document.getElementById('editFund').value   = p.fund.replace(/[^\d.]/g,'');
+  document.getElementById('editAgency').value = p.agency;
+  document.getElementById('editAbstract').value = p.abstract;
+  document.getElementById('editProjectId').value = id;
+  document.getElementById('editOverlay').classList.add('open');
+}
+function closeEditModal() { document.getElementById('editOverlay').classList.remove('open'); }
+function saveEdit() {
+  const id = parseInt(document.getElementById('editProjectId').value);
+  const p  = projects.find(x => x.id === id);
+  if (!p) return;
+  p.title   = document.getElementById('editTitle').value.trim()   || p.title;
+  p.pi      = document.getElementById('editPI').value.trim()      || p.pi;
+  p.copi    = document.getElementById('editCoPI').value.trim()    || '—';
+  p.dept    = document.getElementById('editDept').value           || p.dept;
+  p.status  = document.getElementById('editStatus').value        || p.status;
+  p.agency  = document.getElementById('editAgency').value.trim() || p.agency;
+  p.abstract= document.getElementById('editAbstract').value.trim()|| p.abstract;
+  const f   = parseFloat(document.getElementById('editFund').value);
+  if (!isNaN(f)) p.fund = '₹' + f + ' Lakhs';
+  closeEditModal();
+  applyFilters();
+  showToast('Project updated successfully', 'success');
+}
+
+// ─── Add Project Modal ────────────────────────────────────────────────────────
+function openAddModal() { document.getElementById('addOverlay').classList.add('open'); }
+function closeAddModal(){ document.getElementById('addOverlay').classList.remove('open'); }
+function saveNewProject() {
+  const title = document.getElementById('addTitle').value.trim();
+  const pi    = document.getElementById('addPI').value.trim();
+  const dept  = document.getElementById('addDept').value;
+  if (!title || !pi || !dept) { showToast('Please fill in Title, PI, and Department', 'error'); return; }
+  const newId = Math.max(...projects.map(p=>p.id)) + 1;
+  const year  = new Date().getFullYear();
+  projects.push({
+    id: newId,
+    code: `VASRC/${year}/${String(newId).padStart(3,'0')}`,
+    title, pi,
+    copi: document.getElementById('addCoPI').value.trim() || '—',
+    dept,
+    status: document.getElementById('addStatus').value || 'Pending Approval',
+    start: document.getElementById('addStart').value || 'TBD',
+    end:   document.getElementById('addEnd').value   || 'TBD',
+    progress: 0,
+    fund: '₹' + (document.getElementById('addFund').value || '0') + ' Lakhs',
+    agency: document.getElementById('addAgency').value.trim() || 'TBD',
+    year,
+    abstract: document.getElementById('addAbstract').value.trim() || 'Abstract to be added.',
+    keywords: document.getElementById('addKeywords').value.trim() || '—',
+    team: [{ name: pi, role: 'PI' }],
+    milestones: [{ label: 'Project Initiation', date: 'TBD', done: false, active: true }]
+  });
+  closeAddModal();
+  applyFilters();
+  showToast(`Project "${title.substring(0,40)}…" added successfully`, 'success');
+  ['addTitle','addPI','addCoPI','addFund','addAgency','addAbstract','addKeywords','addStart','addEnd'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('addDept').value   = '';
+  document.getElementById('addStatus').value = '';
+}
+
+// ─── Export ───────────────────────────────────────────────────────────────────
+function exportProjects() {
+  const rows = [['Code','Title','PI','Department','Status','Progress %','Funding','Agency','Start','End']];
+  projects.forEach(p => rows.push([p.code, p.title, p.pi, p.dept, p.status, p.progress, p.fund, p.agency, p.start, p.end]));
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'VASRC_Projects_Export.csv'; a.click();
+  showToast('Projects exported as CSV', 'success');
+}
+
+// ─── Download Report ──────────────────────────────────────────────────────────
+function downloadReport(id) {
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+  const content = `VASRC PROJECT REPORT\n${'='.repeat(60)}\n\nProject Code : ${p.code}\nTitle        : ${p.title}\nPI           : ${p.pi}\nCo-PI        : ${p.copi}\nDepartment   : ${p.dept}\nStatus       : ${p.status}\nPeriod       : ${p.start} – ${p.end}\nFunding      : ${p.fund} (${p.agency})\nProgress     : ${p.progress}%\nKeywords     : ${p.keywords}\n\nABSTRACT\n${'-'.repeat(60)}\n${p.abstract}\n\nTEAM\n${'-'.repeat(60)}\n${p.team.map(m=>`  ${m.role}: ${m.name}`).join('\n')}\n\nMILESTONES\n${'-'.repeat(60)}\n${p.milestones.map(m=>`  [${m.done?'✓':m.active?'→':' '}] ${m.label} (${m.date})`).join('\n')}\n\n${'='.repeat(60)}\nGenerated by VASRC Management System – Kamdhenu University\n`;
+  const blob = new Blob([content], {type:'text/plain'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `${p.code.replace(/\//g,'-')}_Report.txt`; a.click();
+  showToast(`Report downloaded for ${p.code}`, 'success');
+}
+
+// ─── Toast ────────────────────────────────────────────────────────────────────
+function showToast(msg, type='info') {
+  const colors = { success:'#27ae60', error:'#e74c3c', info:'#1565c0' };
+  const icons  = { success:'fa-check-circle', error:'fa-exclamation-circle', info:'fa-info-circle' };
+  const t = document.createElement('div');
+  t.style.cssText = `position:fixed;bottom:24px;right:24px;background:${colors[type]};color:#fff;padding:12px 18px;border-radius:10px;font-size:0.85rem;font-family:Inter,sans-serif;display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,0.2);z-index:9999;max-width:340px;animation:slideIn .25s ease;`;
+  t.innerHTML = `<i class="fas ${icons[type]}"></i><span>${msg}</span>`;
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 3200);
+}
+
+// ─── Session & Init ──────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const user = JSON.parse(sessionStorage.getItem('vasrc_user') || '{}');
+  if (user.name) {
+    document.getElementById('sidebarName').textContent = user.name;
+    document.getElementById('sidebarRole').textContent = user.role === 'admin' ? 'Administrator' : user.role;
+    const initials = user.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('sidebarAvatar').textContent = initials;
+  }
+  applyFilters();
+});
+
+function logout() {
+  sessionStorage.removeItem('vasrc_user');
+  window.location.href = 'login.html';
+}
+</script>
+
+<!-- ── Edit Project Modal ─────────────────────────────────────────── -->
+<div class="modal-overlay" id="editOverlay" onclick="if(event.target===this)closeEditModal()">
+  <div class="modal-box" style="max-width:600px;">
+    <div class="modal-header">
+      <div class="modal-header-icon"><i class="fas fa-edit"></i></div>
+      <div class="modal-header-text">
+        <div class="modal-title" id="editModalTitle">Edit Project</div>
+        <div class="modal-code">Update project details below</div>
+      </div>
+      <button class="modal-close" onclick="closeEditModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editProjectId"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div style="grid-column:1/-1;"><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">Project Title *</label><input id="editTitle" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;" /></div>
+        <div><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">Principal Investigator *</label><input id="editPI" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;"/></div>
+        <div><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">Co-Investigator</label><input id="editCoPI" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;"/></div>
+        <div><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">Department *</label>
+          <select id="editDept" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;">
+            <option>Animal Pathology</option><option>Veterinary Microbiology</option><option>Animal Nutrition</option>
+            <option>Parasitology</option><option>Veterinary Surgery</option><option>Animal Genetics</option><option>Livestock Production</option>
+          </select></div>
+        <div><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">Status</label>
+          <select id="editStatus" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;">
+            <option>Ongoing</option><option>Under Review</option><option>Completed</option><option>Pending Approval</option>
+          </select></div>
+        <div><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">Funding (₹ Lakhs)</label><input id="editFund" type="number" step="0.1" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;"/></div>
+        <div><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">Funding Agency</label><input id="editAgency" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;"/></div>
+        <div style="grid-column:1/-1;"><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">Abstract</label><textarea id="editAbstract" rows="4" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;resize:vertical;"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeEditModal()"><i class="fas fa-times"></i> Cancel</button>
+      <button class="btn btn-primary" onclick="saveEdit()"><i class="fas fa-save"></i> Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Add Project Modal ──────────────────────────────────────────── -->
+<div class="modal-overlay" id="addOverlay" onclick="if(event.target===this)closeAddModal()">
+  <div class="modal-box" style="max-width:620px;">
+    <div class="modal-header">
+      <div class="modal-header-icon"><i class="fas fa-plus-circle"></i></div>
+      <div class="modal-header-text">
+        <div class="modal-title">Add New Project</div>
+        <div class="modal-code">Register a new VASRC research project</div>
+      </div>
+      <button class="modal-close" onclick="closeAddModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div style="grid-column:1/-1;"><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">Project Title *</label><input id="addTitle" placeholder="Full research project title" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;"/></div>
+        <div><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">Principal Investigator *</label><input id="addPI" placeholder="Dr. Full Name" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;"/></div>
+        <div><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">Co-Investigator</label><input id="addCoPI" placeholder="Optional" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;"/></div>
+        <div><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">Department *</label>
+          <select id="addDept" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;">
+            <option value="">Select Department</option><option>Animal Pathology</option><option>Veterinary Microbiology</option>
+            <option>Animal Nutrition</option><option>Parasitology</option><option>Veterinary Surgery</option>
+            <option>Animal Genetics</option><option>Livestock Production</option>
+          </select></div>
+        <div><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">Status</label>
+          <select id="addStatus" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;">
+            <option value="Pending Approval">Pending Approval</option><option value="Ongoing">Ongoing</option>
+            <option value="Under Review">Under Review</option><option value="Completed">Completed</option>
+          </select></div>
+        <div><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">Start Date</label><input id="addStart" type="date" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;"/></div>
+        <div><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">End Date</label><input id="addEnd" type="date" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;"/></div>
+        <div><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">Funding (₹ Lakhs)</label><input id="addFund" type="number" step="0.1" placeholder="e.g. 15.5" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;"/></div>
+        <div><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">Funding Agency</label><input id="addAgency" placeholder="e.g. ICAR, DST, GSSCST" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;"/></div>
+        <div style="grid-column:1/-1;"><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">Keywords</label><input id="addKeywords" placeholder="e.g. Bovine, Vaccine, Genomics" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;"/></div>
+        <div style="grid-column:1/-1;"><label style="font-size:.8rem;font-weight:600;display:block;margin-bottom:5px;">Project Abstract</label><textarea id="addAbstract" rows="4" placeholder="Brief description of the research project…" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.87rem;font-family:Inter,sans-serif;outline:none;resize:vertical;"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeAddModal()"><i class="fas fa-times"></i> Cancel</button>
+      <button class="btn btn-primary" onclick="saveNewProject()"><i class="fas fa-save"></i> Add Project</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
